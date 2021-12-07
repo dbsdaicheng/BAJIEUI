@@ -8,9 +8,10 @@ const devConfig = {
     port: 3000,
     hot: true,
     open: true,
-    contentBase: path.resolve(__dirname, '../dist')
+    contentBase: path.resolve(__dirname, '../dist'),
   },
+  devtool: "source-map",
 };
 
-module.exports = merge(commonConfig, devConfig)
+module.exports = merge(commonConfig, devConfig);
   

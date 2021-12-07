@@ -3,7 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
 module.exports = {
-  entry: path.resolve(__dirname, '../src'),
+  entry: path.resolve(__dirname, '../src/index.tsx'),
   module: {
     rules: [
       {
@@ -57,7 +57,7 @@ module.exports = {
   },
   resolve: {
     //使用的拓展名
-    extensions: [".js", ".json", ".jsx", ".css"],
+    extensions: [".js", ".json", ".jsx", ".css", ".tsx"],
     //使用的别名
     alias: {
       "@api": path.resolve(__dirname,'src/api'),
