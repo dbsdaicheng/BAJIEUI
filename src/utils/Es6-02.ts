@@ -44,6 +44,16 @@
 // onRejected
 //    需要对onRejected类型进行验证，如果不是一个函数就设置为默认函数，这个函数时获取终值
 //    该函数在promise状态为rejected时候调用，传入拒因
+
+
+// then 方法需要支持多次调用
+// new Promise中的handler需要支持异步调用
+// then方法需要支持链式调用
+// then方法如果只传递一个参数，也需要返回正确的结果
+// 需要支持链式调用
+//    支持链式调用的条件
+//      只有then函数调用返回一个promise对象
+//      then函数有一个返回值
 const PENDING = 'pending';
 const FULFILLED = 'fulfilled';
 const REJECTED = 'rejected';
@@ -52,8 +62,8 @@ class newPromise {
   state: any;
   value: any;
   reason: any;
-  successCallBack: null | Function;
-  errorCallBack: null | Function;
+  successCallBack: any;
+  errorCallBack: any;
   constructor(handler: Function) {
     if (typeof handler !== 'function') {
       throw `Promise构造函数的参数${handler}不是一个函数`
@@ -67,26 +77,70 @@ class newPromise {
     if (this.state !== PENDING) return ;
     this.state = FULFILLED;
     this.value = value;
-    this.successCallBack(this.value);
+    this.successCallBack.map((fn: any) => fn())
   }
   reject(reason: any) {
     if (this.state !== PENDING) return ;
     this.state = REJECTED;
     this.reason = reason;
-    this.errorCallBack(this.reason);
+    this.errorCallBack.map((fn: any) => fn())
   }
-  then(onResolved: Function, onRejected: Function) {
-    onResolved = typeof onResolved === 'function' ? onResolved : (value: any) => value;
-    onRejected = typeof onRejected === 'function' ? onRejected : (value: any) => value;
-    if (this.state === FULFILLED) {
-      onResolved(this.value);
-    }
-    if (this.state === REJECTED) {
-      onRejected(this.reason);
-    }
-    if (this.state === PENDING) {
-      this.successCallBack = onRejected;
-      this.errorCallBack = onRejected;
+  then(onResolved: Function, onRejected?: Function) {
+    return new newPromise((resolve: any, reject: any) => {
+      onResolved = typeof onResolved === 'function' ? onResolved : (value: any) => value;
+      onRejected = typeof onRejected === 'function' ? onRejected : (value: any) => value;
+      if (this.state === FULFILLED) {
+        let result = onResolved(this.value);
+        this.handlerPromise(result, resolve, reject);
+      }
+      if (this.state === REJECTED) {
+        let result = onRejected(this.reason);
+        this.handlerPromise(result, resolve, reject);
+      }
+      if (this.state === PENDING) {
+        this.successCallBack.push(() => {
+          let result = onResolved(this.value);
+          this.handlerPromise(result, resolve, reject);
+        });
+        this.errorCallBack.push(() => {
+          let result = onRejected(this.reason);
+          this.handlerPromise(result, resolve, reject);
+        });
+      }
+    })
+  }
+  handlerPromise (result: any, resolve: any, reject: any) {
+    if(result instanceof Promise) {
+      result.then(resolve, reject);
+    } else {
+      resolve(result);
     }
   }
 }
+
+
+// 测试
+const p = new newPromise((resolve: any, reject: any) => {
+  resolve("errr")
+})
+console.log(p)
+p.then(() => {
+return new Promise((resolve, reject) => {
+  resolve("2222")
+})
+}).then((value: any) => {
+  console.log(value); 
+})
+
+
+const s = new Promise((resolve, reject) => {
+resolve("success")
+})
+
+s.then((value) => {
+return new Promise((resolve, reject) => {
+  resolve("11")
+})
+}).then((value) => {
+  console.log(value)
+})
