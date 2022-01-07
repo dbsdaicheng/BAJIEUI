@@ -75,11 +75,11 @@ class newPromise {
         resolve("errr")
     })
     console.log(p)
-    p.then((value) => {
+    p.then((value: any) => {
       return new Promise((resolve, reject) => {
         resolve("2222")
       })
-    }).then((value) => {
+    }).then((value: any) => {
       console.log(value);
     })
 
