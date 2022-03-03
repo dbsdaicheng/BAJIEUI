@@ -1,0 +1,40 @@
+body {
+  background: #000;
+}
+
+:local(.now_clock)
+  width: 400px;
+  height: 400px;
+  margin: 300px auto;
+  // background: #fff;
+  position relative;
+
+:local(.dynamic)
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 0;
+  width: 0;
+  background-color: red;
+
+:local(.anchor)
+  position: absolute;
+  left: 0;
+  top: 0;
+
+:local(.minute-line) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #fff;
+  width: 1px;
+  height: 9px;
+  transform: translate(-50%, -100%) translateY(-131px);
+  opacity: .34;
+}
+
+:local(.minute-text)
+  position: absolute;
+  font: 12px Avenir Next, Helvetica, Arial, sans-serif;
+  color: #fff;
+  transform: translate(-50%, -50%);
